@@ -23,7 +23,7 @@ namespace ScatterPointApp.Models
             {
                 var item = Items[i];
                 item.Size = (SizeMax - SizeMin) * (i + 1) / Count + SizeMin;
-                item.Value = (i + 1) / (double)Count;
+                item.Value = (ValueMax - ValueMin) * (i + 1) / (double)Count + ValueMin;
                 Items[i] = item;
             }
         }
@@ -42,6 +42,19 @@ namespace ScatterPointApp.Models
             set { SetProperty(ref sizeMin, value); }
         }
 
+        private double valueMax = 1.0;
+        public double ValueMax
+        {
+            get { return valueMax; }
+            set { SetProperty(ref valueMax, value); }
+        }
+
+        private double valueMin = 0.0;
+        public double ValueMin
+        {
+            get { return valueMin; }
+            set { SetProperty(ref valueMin, value); }
+        }
 
         private int limit = 50;
         public int Limit

@@ -6,11 +6,11 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" Height="350" Width="525" d:DataContext="{d:DesignInstance {x:Type ViewModels:MainWindowViewModel}}">
     <Grid>
-        <oxy:Plot PlotAreaBorderThickness="0">
+        <oxy:Plot PlotAreaBorderThickness="0" PlotType="Polar">
             <oxy:Plot.Axes>
                 <oxy:MagnitudeAxis Maximum="100" MinorGridlineStyle="Dash" MajorGridlineColor="#400C00FF" MinorStep="5" MajorStep="25" Minimum="0"/>
                 <oxy:AngleAxis Maximum="360" MinorGridlineStyle="Dot" MajorGridlineColor="#40000CFF" MinorStep="10" MajorGridlineStyle="Dash" MajorStep="30" Minimum="0"/>
-                <oxy:LinearColorAxis HighColor="Red" IsManipulationEnabled="True" LowColor="#FFFFC3C3" Maximum="1" Minimum="0" Position="Right">
+                <oxy:LinearColorAxis HighColor="Red" LowColor="#FFFFC3C3" Maximum="1" Minimum="0" Position="Right">
                     <GradientStop Color="#FFFFCCCC"/>
                     <GradientStop Color="#FFFF5E5E" Offset="0.5"/>
                     <GradientStop Color="Red" Offset="1"/>
