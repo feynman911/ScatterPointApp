@@ -2,11 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
-        xmlns:oxy="http://oxyplot.org/wpf" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ViewModels="clr-namespace:ScatterPointApp.ViewModels" mc:Ignorable="d" x:Class="ScatterPointApp.Views.MainWindow"
+        xmlns:oxy="http://oxyplot.org/wpf" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ViewModels="clr-namespace:ScatterPointApp.ViewModels" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:Behaviors="clr-namespace:ScatterPointApp.Behaviors" xmlns:ScatterPointApp="clr-namespace:ScatterPointApp" mc:Ignorable="d" x:Class="ScatterPointApp.Views.MainWindow"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525" d:DataContext="{d:DesignInstance {x:Type ViewModels:MainWindowViewModel}}">
+        Title="{Binding Title}" Height="350" Width="540" d:DataContext="{d:DesignInstance {x:Type ViewModels:MainWindowViewModel}}">
     <Grid>
-        <oxy:Plot PlotAreaBorderThickness="0" PlotType="Polar">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <oxy:Plot x:Name="Plot_GridLine" PlotAreaBorderThickness="0" PlotType="Polar" Background="White" >
             <oxy:Plot.Axes>
                 <oxy:MagnitudeAxis Maximum="100" MinorGridlineStyle="Dash" MajorGridlineColor="#400C00FF" MinorStep="5" MajorStep="25" Minimum="0"/>
                 <oxy:AngleAxis Maximum="360" MinorGridlineStyle="Dot" MajorGridlineColor="#40000CFF" MinorStep="10" MajorGridlineStyle="Dash" MajorStep="30" Minimum="0"/>
@@ -16,8 +19,46 @@
                     <GradientStop Color="Red" Offset="1"/>
                 </oxy:LinearColorAxis>
             </oxy:Plot.Axes>
-            <oxy:ScatterSeries ItemsSource="{Binding ScatterPoints}" MarkerType="Circle"/>
         </oxy:Plot>
-        <CheckBox Content="Active" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="32,23,0,0" IsChecked="{Binding StartFlag}"/>
+        <oxy:Plot x:Name="Plot" PlotAreaBorderThickness="0" PlotType="Polar" IsManipulationEnabled="False" Background="#19FFFFFF" IsLegendVisible="False" IsMouseWheelEnabled="False" >
+            <i:Interaction.Behaviors>
+                <Behaviors:OxyContextMenuBehavior/>
+            </i:Interaction.Behaviors>
+            <i:Interaction.Triggers>
+                <prism:InteractionRequestTrigger SourceObject="{Binding OxyPlotSaveRequest, Mode=OneWay}">
+                    <Behaviors:OxySaveAction/>
+                </prism:InteractionRequestTrigger>
+            </i:Interaction.Triggers>
+            <oxy:Plot.Axes>
+                <oxy:MagnitudeAxis Maximum="100" MajorGridlineColor="#FF7BA1FF" MinorStep="5" MajorStep="25" Minimum="0" MinorGridlineColor="#FFB2B9FF" MaximumRange="100" MinorGridlineStyle="Dash"/>
+                <oxy:AngleAxis Maximum="360" MajorGridlineColor="#FFC3C6FF" MinorStep="10" MajorStep="30" Minimum="0" MinorGridlineColor="#FFC3C6FF" MinorGridlineStyle="Dash"/>
+                <oxy:LinearColorAxis HighColor="Red" LowColor="#FFFFC3C3" Maximum="1" Minimum="0" Position="Right">
+                    <GradientStop Color="#FFFFCCCC"/>
+                    <GradientStop Color="#FFFF5E5E" Offset="0.5"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </oxy:LinearColorAxis>
+            </oxy:Plot.Axes>
+            <oxy:ScatterSeries MarkerType="Circle" ItemsSource="{Binding ScatterPoints}" RenderInLegend="False" TrackerFormatString=""/>
+        </oxy:Plot>
+        <CheckBox Content="Active" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="32,23,0,0" IsChecked="{Binding StartFlag}" Height="15" Width="52" Grid.ColumnSpan="2"/>
+        <Button Content="ChartSave" HorizontalAlignment="Left" Style="{DynamicResource SimpleButton}" VerticalAlignment="Top" Width="76" Margin="34,46,0,0" Command="{Binding SaveChart, Mode=OneWay}" Height="18" Grid.ColumnSpan="2">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                    <GradientStop Color="#FFB4BDE4" Offset="0"/>
+                    <GradientStop Color="#FF8C96C1" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+        <StackPanel Margin="16,0,0,33" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+            <TextBlock x:Name="TimerInterval" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Timer Interval (ms)" VerticalAlignment="Center"/>
+            <TextBox x:Name="Interval" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Interval}" VerticalAlignment="Center" MinWidth="30" Margin="5,0,0,0" TextAlignment="Right">
+                <i:Interaction.Behaviors>
+                    <Behaviors:TextBoxEnterBindBehavior/>
+                </i:Interaction.Behaviors>
+            </TextBox>
+        </StackPanel>
+        <TextBlock x:Name="PointAddRate" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding PointAddRate}" VerticalAlignment="Bottom" Margin="16,0,0,19"/>
+        <TextBlock x:Name="FrameRate" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom" Margin="16,0,0,3"/>
+        <CheckBox x:Name="CheckBox_GridLine" Content="GridLine On/Off" HorizontalAlignment="Left" Margin="16,0,0,59.5" VerticalAlignment="Bottom" Click="CheckBox_GridLine_Click" IsChecked="True"/>
     </Grid>
 </Window>
