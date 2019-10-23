@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Win32;
+using OxyPlot;
+using OxyPlot.Wpf;
+using Prism.Events;
 
 namespace ScatterPointApp.Views
 {
@@ -49,22 +54,28 @@ namespace ScatterPointApp.Views
             //}
         }
 
+        /// <summary>
+        /// PlotのGridLineOn/Off
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckBox_GridLine_Click(object sender, RoutedEventArgs e)
         {
             if (CheckBox_GridLine.IsChecked != false)
             {
-                Plot.Axes[0].MajorGridlineStyle = OxyPlot.LineStyle.Solid;
-                Plot.Axes[0].MinorGridlineStyle = OxyPlot.LineStyle.Dash;
-                Plot.Axes[1].MajorGridlineStyle = OxyPlot.LineStyle.Solid;
-                Plot.Axes[1].MinorGridlineStyle = OxyPlot.LineStyle.Dash;
+                Plot_Live.Axes[0].MajorGridlineStyle = OxyPlot.LineStyle.Solid;
+                Plot_Live.Axes[0].MinorGridlineStyle = OxyPlot.LineStyle.Dash;
+                Plot_Live.Axes[1].MajorGridlineStyle = OxyPlot.LineStyle.Solid;
+                Plot_Live.Axes[1].MinorGridlineStyle = OxyPlot.LineStyle.Dash;
             }
             else
             {
-                Plot.Axes[0].MajorGridlineStyle = OxyPlot.LineStyle.None;
-                Plot.Axes[0].MinorGridlineStyle = OxyPlot.LineStyle.None;
-                Plot.Axes[1].MajorGridlineStyle = OxyPlot.LineStyle.None;
-                Plot.Axes[1].MinorGridlineStyle = OxyPlot.LineStyle.None;
+                Plot_Live.Axes[0].MajorGridlineStyle = OxyPlot.LineStyle.None;
+                Plot_Live.Axes[0].MinorGridlineStyle = OxyPlot.LineStyle.None;
+                Plot_Live.Axes[1].MajorGridlineStyle = OxyPlot.LineStyle.None;
+                Plot_Live.Axes[1].MinorGridlineStyle = OxyPlot.LineStyle.None;
             }
         }
+
     }
 }

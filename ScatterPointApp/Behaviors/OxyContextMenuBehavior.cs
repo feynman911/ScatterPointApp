@@ -6,6 +6,7 @@ using System.Windows.Interactivity;
 using Microsoft.Win32;
 using OxyPlot;
 using OxyPlot.Wpf;
+using Prism.Events;
 
 namespace ScatterPointApp.Behaviors
 {
@@ -27,6 +28,8 @@ namespace ScatterPointApp.Behaviors
             menuItemCopy.Click += OnCopyClick;
             menuItemSave.Click += OnSaveClick;
             this.AssociatedObject.ContextMenu = menuListBox;
+
+            if(EventA != null) EventA.GetEvent<PubSubEvent<string>>().Subscribe(ChartSave);
         }
 
         private void OnSaveClick(object sender, RoutedEventArgs e)
@@ -94,7 +97,6 @@ namespace ScatterPointApp.Behaviors
             }));
         }
 
-
         /// <summary>
         /// 要素にデタッチされた時にイベントハンドラを解除
         /// </summary>
@@ -111,7 +113,6 @@ namespace ScatterPointApp.Behaviors
         MenuItem menuItemCopy = new MenuItem();
         MenuItem menuItemSave = new MenuItem();
 
-
         /// <summary>
         /// 画像幅
         /// </summary>
@@ -120,10 +121,8 @@ namespace ScatterPointApp.Behaviors
             get { return (int)GetValue(MyImageWidth); }
             set { SetValue(MyImageWidth, value); }
         }
-
         public static readonly DependencyProperty MyImageWidth =
             DependencyProperty.Register("ImageWidth", typeof(int), typeof(OxyContextMenuBehavior), new PropertyMetadata(0));
-
 
         /// <summary>
         /// 画像高さ
@@ -133,10 +132,8 @@ namespace ScatterPointApp.Behaviors
             get { return (int)GetValue(MyImageHeight); }
             set { SetValue(MyImageHeight, value); }
         }
-
         public static readonly DependencyProperty MyImageHeight =
             DependencyProperty.Register("ImageHeight", typeof(int), typeof(OxyContextMenuBehavior), new PropertyMetadata(0));
-
 
         /// <summary>
         /// 画像倍率
@@ -146,7 +143,6 @@ namespace ScatterPointApp.Behaviors
             get { return (double)GetValue(MyScale); }
             set { SetValue(MyScale, value); }
         }
-
         public static readonly DependencyProperty MyScale =
             DependencyProperty.Register("Scale", typeof(double), typeof(OxyContextMenuBehavior), new PropertyMetadata(1.0));
 
@@ -158,10 +154,59 @@ namespace ScatterPointApp.Behaviors
             get { return (string)GetValue(MyFileName); }
             set { SetValue(MyFileName, value); }
         }
-
         public static readonly DependencyProperty MyFileName =
             DependencyProperty.Register("FileName", typeof(string), typeof(OxyContextMenuBehavior), new PropertyMetadata(""));
 
+        /// <summary>
+        /// ViewModelからのイベントを受けるためのEventAggregator
+        /// </summary>
+        public IEventAggregator EventA
+        {
+            get { return (IEventAggregator)GetValue(MyEA); }
+            set { SetValue(MyEA, value); }
+        }
+        public static readonly DependencyProperty MyEA =
+            DependencyProperty.Register("EventA", typeof(IEventAggregator), typeof(OxyContextMenuBehavior), new PropertyMetadata());
 
+        /// <summary>
+        /// 画像保存のイベントを受け取った時の処理
+        /// </summary>
+        /// <param name="fn"></param>
+        private void ChartSave(string fn)
+        {
+            string filename = FileName;
+            if (FileName == "") filename = fn;
+
+            if (filename == "")
+            {
+                var dlg = new SaveFileDialog
+                {
+                    Filter = ".png files|*.png",
+                    DefaultExt = ".png"
+                };
+                if (dlg.ShowDialog().Value) filename = dlg.FileName;
+            }
+            Plot plot = this.AssociatedObject as Plot;
+
+            double width = plot.ActualWidth;
+            double height = plot.ActualHeight;
+            if (ImageWidth > 0) width = ImageWidth;
+            if (ImageHeight > 0) height = ImageHeight;
+            if (Scale > 0)
+            {
+                width = width * Scale;
+                height = height * Scale;
+            }
+
+            if (filename != "")
+            {
+                var ext = Path.GetExtension(filename).ToLower();
+                if (ext == ".png")
+                {
+                    PngExporter.Export(plot.ActualModel, filename, (int)width, (int)height, OxyColors.White);
+                }
+            }
+
+        }
     }
 }

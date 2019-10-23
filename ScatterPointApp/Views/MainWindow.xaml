@@ -4,44 +4,40 @@
         xmlns:prism="http://prismlibrary.com/"
         xmlns:oxy="http://oxyplot.org/wpf" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ViewModels="clr-namespace:ScatterPointApp.ViewModels" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:Behaviors="clr-namespace:ScatterPointApp.Behaviors" xmlns:ScatterPointApp="clr-namespace:ScatterPointApp" mc:Ignorable="d" x:Class="ScatterPointApp.Views.MainWindow"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="540" d:DataContext="{d:DesignInstance {x:Type ViewModels:MainWindowViewModel}}">
+        Title="{Binding Title}" Height="350" Width="540" d:DataContext="{d:DesignInstance {x:Type ViewModels:MainWindowViewModel}}" MinWidth="540" MinHeight="350">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <oxy:Plot x:Name="Plot_GridLine" PlotAreaBorderThickness="0" PlotType="Polar" Background="White" >
-            <oxy:Plot.Axes>
-                <oxy:MagnitudeAxis Maximum="100" MinorGridlineStyle="Dash" MajorGridlineColor="#400C00FF" MinorStep="5" MajorStep="25" Minimum="0"/>
-                <oxy:AngleAxis Maximum="360" MinorGridlineStyle="Dot" MajorGridlineColor="#40000CFF" MinorStep="10" MajorGridlineStyle="Dash" MajorStep="30" Minimum="0"/>
-                <oxy:LinearColorAxis HighColor="Red" LowColor="#FFFFC3C3" Maximum="1" Minimum="0" Position="Right">
-                    <GradientStop Color="#FFFFCCCC"/>
-                    <GradientStop Color="#FFFF5E5E" Offset="0.5"/>
-                    <GradientStop Color="Red" Offset="1"/>
-                </oxy:LinearColorAxis>
-            </oxy:Plot.Axes>
-        </oxy:Plot>
-        <oxy:Plot x:Name="Plot" PlotAreaBorderThickness="0" PlotType="Polar" IsManipulationEnabled="False" Background="#19FFFFFF" IsLegendVisible="False" IsMouseWheelEnabled="False" >
+        <oxy:Plot x:Name="Plot" PlotAreaBorderThickness="0" PlotType="Polar" Background="White" TextColor="#00000000" >
             <i:Interaction.Behaviors>
-                <Behaviors:OxyContextMenuBehavior/>
+                <Behaviors:OxyContextMenuBehavior EventA="{Binding EventA}"/>
             </i:Interaction.Behaviors>
-            <i:Interaction.Triggers>
-                <prism:InteractionRequestTrigger SourceObject="{Binding OxyPlotSaveRequest, Mode=OneWay}">
-                    <Behaviors:OxySaveAction/>
-                </prism:InteractionRequestTrigger>
-            </i:Interaction.Triggers>
             <oxy:Plot.Axes>
-                <oxy:MagnitudeAxis Maximum="100" MajorGridlineColor="#FF7BA1FF" MinorStep="5" MajorStep="25" Minimum="0" MinorGridlineColor="#FFB2B9FF" MaximumRange="100" MinorGridlineStyle="Dash"/>
-                <oxy:AngleAxis Maximum="360" MajorGridlineColor="#FFC3C6FF" MinorStep="10" MajorStep="30" Minimum="0" MinorGridlineColor="#FFC3C6FF" MinorGridlineStyle="Dash"/>
-                <oxy:LinearColorAxis HighColor="Red" LowColor="#FFFFC3C3" Maximum="1" Minimum="0" Position="Right">
+                <oxy:MagnitudeAxis Maximum="100" MinorGridlineStyle="Dash" MajorGridlineColor="#666464FF" MinorStep="5" MajorStep="25" Minimum="0" MinorGridlineColor="#336464FF" TextColor="Black"/>
+                <oxy:AngleAxis Maximum="360" MinorGridlineStyle="Dash" MajorGridlineColor="#666464FF" MinorStep="10" MajorStep="30" Minimum="0" MinorGridlineColor="#3364649B" TextColor="Black"/>
+                <oxy:LinearColorAxis HighColor="Red" LowColor="#FFFFC3C3" Maximum="1" Minimum="0" Position="Right" IsAxisVisible="False" IsZoomEnabled="False" IsPanEnabled="False">
                     <GradientStop Color="#FFFFCCCC"/>
                     <GradientStop Color="#FFFF5E5E" Offset="0.5"/>
                     <GradientStop Color="Red" Offset="1"/>
                 </oxy:LinearColorAxis>
             </oxy:Plot.Axes>
-            <oxy:ScatterSeries MarkerType="Circle" ItemsSource="{Binding ScatterPoints}" RenderInLegend="False" TrackerFormatString=""/>
+            <oxy:ScatterSeries MarkerType="Circle" ItemsSource="{Binding ScatterPoints}"/>
+        </oxy:Plot>
+        <oxy:Plot x:Name="Plot_Live" PlotAreaBorderThickness="0" PlotType="Polar" IsManipulationEnabled="False" Background="{x:Null}" IsLegendVisible="False" IsMouseWheelEnabled="False" >
+            <oxy:Plot.Axes>
+                <oxy:MagnitudeAxis Maximum="100" MajorGridlineColor="#7F6464FF" MinorStep="5" MajorStep="25" Minimum="0" MinorGridlineColor="#3F6464FF" MaximumRange="100" MinorGridlineStyle="Dash" TextColor="#00000000"/>
+                <oxy:AngleAxis Maximum="360" MajorGridlineColor="#7F6464FF" MinorStep="10" MajorStep="30" Minimum="0" MinorGridlineColor="#3F6464FF" MinorGridlineStyle="Dash" TextColor="#00000000"/>
+                <oxy:LinearColorAxis HighColor="Red" LowColor="#FFFFC3C3" Maximum="1" Minimum="0" Position="Right" IsAxisVisible="False" IsZoomEnabled="False" IsPanEnabled="False">
+                    <GradientStop Color="#FFFFCCCC"/>
+                    <GradientStop Color="#FFFF5E5E" Offset="0.5"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </oxy:LinearColorAxis>
+            </oxy:Plot.Axes>
+            <oxy:ScatterSeries MarkerType="Circle" ItemsSource="{Binding ScatterPointsLive}" RenderInLegend="False" TrackerFormatString=""/>
         </oxy:Plot>
         <CheckBox Content="Active" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="32,23,0,0" IsChecked="{Binding StartFlag}" Height="15" Width="52" Grid.ColumnSpan="2"/>
-        <Button Content="ChartSave" HorizontalAlignment="Left" Style="{DynamicResource SimpleButton}" VerticalAlignment="Top" Width="76" Margin="34,46,0,0" Command="{Binding SaveChart, Mode=OneWay}" Height="18" Grid.ColumnSpan="2">
+        <Button Content="ChartSaveEA" HorizontalAlignment="Left" Style="{DynamicResource SimpleButton}" VerticalAlignment="Top" Width="76" Margin="34,46,0,0" Command="{Binding SaveChartEA, Mode=OneWay}" Height="18">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                     <GradientStop Color="#FFB4BDE4" Offset="0"/>
