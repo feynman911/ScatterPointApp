@@ -29,7 +29,6 @@ namespace ScatterPointApp.ViewModels
             timer.Tick += new EventHandler(MovingPoint);
 
             watch.Start();
-            EventA = ea;
         }
 
         private DispatcherTimer timer = new DispatcherTimer();
@@ -144,21 +143,33 @@ namespace ScatterPointApp.ViewModels
             }
         }
 
-        #region イベントアグリゲータを使用してViewでChart保存
+        #region *************** ChartPlot用
 
-        public IEventAggregator EventA { get; set; }
-
-        private DelegateCommand saveChartEA;
-        /// <summary>
-        /// Viewにイベント発行コマンド
-        /// </summary>
-        public DelegateCommand SaveChartEA =>
-            saveChartEA ?? (saveChartEA = new DelegateCommand(ExecuteSaveChartEA));
-        void ExecuteSaveChartEA()
+        private string fileName = "";
+        public string FileName
         {
-            //ファイル名を渡すとOxyContextMenuBehaiviorでそのまま保存
-            //ファイル名無しでダイアログ表示
-            EventA.GetEvent<PubSubEvent<string>>().Publish("");
+            get { return fileName; }
+            set { SetProperty(ref fileName, value); }
+        }
+
+        private bool chartSave = false;
+        public bool ChartSave
+        {
+            get { return chartSave; }
+            set
+            {
+                SetProperty(ref chartSave, true);
+                SetProperty(ref chartSave, false);
+            }
+        }
+
+        private DelegateCommand commandSave;
+        public DelegateCommand CommandSave =>
+            commandSave ?? (commandSave = new DelegateCommand(ExecuteCommandSave));
+
+        void ExecuteCommandSave()
+        {
+            ChartSave = true;
         }
 
         #endregion

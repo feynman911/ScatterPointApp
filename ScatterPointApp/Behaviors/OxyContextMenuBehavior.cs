@@ -6,12 +6,11 @@ using System.Windows.Interactivity;
 using Microsoft.Win32;
 using OxyPlot;
 using OxyPlot.Wpf;
-using Prism.Events;
 
 namespace ScatterPointApp.Behaviors
 {
     [TypeConstraint(typeof(Plot))]
-    public class OxyContextMenuBehavior: Behavior<Plot>
+    public class OxyContextMenuBehavior : Behavior<Plot>
     {
         /// <summary>
         /// 要素にアタッチされた時にイベントハンドラを登録
@@ -28,14 +27,10 @@ namespace ScatterPointApp.Behaviors
             menuItemCopy.Click += OnCopyClick;
             menuItemSave.Click += OnSaveClick;
             this.AssociatedObject.ContextMenu = menuListBox;
-
-            if(EventA != null) EventA.GetEvent<PubSubEvent<string>>().Subscribe(ChartSave);
         }
 
         private void OnSaveClick(object sender, RoutedEventArgs e)
         {
-            this.AssociatedObject.SaveBitmap("test.png");
-
             double width = this.AssociatedObject.ActualWidth;
             double height = this.AssociatedObject.ActualHeight;
             if (ImageWidth > 0) width = ImageWidth;
@@ -46,36 +41,36 @@ namespace ScatterPointApp.Behaviors
                 height = height * Scale;
             }
 
-            if (FileName == "")
+            var dlg = new SaveFileDialog
             {
-                var dlg = new SaveFileDialog
-                {
-                    Filter = ".png files|*.png|.pdf files|*.pdf",
-                    DefaultExt = ".png"
-                };
-                if (dlg.ShowDialog().Value) FileName = dlg.FileName;
-            }
-            if (FileName != "")
-            {
-                var ext = Path.GetExtension(FileName).ToLower();
-                switch (ext)
-                {
-                    case ".png":
+                Filter = ".png files|*.png|.pdf files|*.pdf",
+                DefaultExt = ".png"
+            };
+            if (dlg.ShowDialog().Value) FileName = dlg.FileName;
 
-                        PngExporter.Export(this.AssociatedObject.ActualModel, FileName, (int)width, (int)height, OxyColors.White);
-                        break;
-                    case ".pdf":
-                        using (var s = File.Create(FileName))
-                        {
-                            PdfExporter.Export(this.AssociatedObject.ActualModel, s, width, height);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            var ext = Path.GetExtension(FileName).ToLower();
+            switch (ext)
+            {
+                case ".png":
+
+                    PngExporter.Export(this.AssociatedObject.ActualModel, FileName, (int)width, (int)height, OxyColors.White);
+                    break;
+                case ".pdf":
+                    using (var s = File.Create(FileName))
+                    {
+                        PdfExporter.Export(this.AssociatedObject.ActualModel, s, width, height);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
+        /// <summary>
+        /// 画像保存（右クリック用）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCopyClick(object sender, RoutedEventArgs e)
         {
             double width = this.AssociatedObject.ActualWidth;
@@ -113,69 +108,164 @@ namespace ScatterPointApp.Behaviors
         MenuItem menuItemCopy = new MenuItem();
         MenuItem menuItemSave = new MenuItem();
 
-        /// <summary>
-        /// 画像幅
-        /// </summary>
+        #region ******************************* ImageWidth
         public int ImageWidth
         {
-            get { return (int)GetValue(MyImageWidth); }
-            set { SetValue(MyImageWidth, value); }
+            get { return (int)this.GetValue(ImageWidthProperty); }
+            set { this.SetValue(ImageWidthProperty, value); }
         }
-        public static readonly DependencyProperty MyImageWidth =
-            DependencyProperty.Register("ImageWidth", typeof(int), typeof(OxyContextMenuBehavior), new PropertyMetadata(0));
 
-        /// <summary>
-        /// 画像高さ
-        /// </summary>
+        public static readonly DependencyProperty ImageWidthProperty =
+            DependencyProperty.Register("ImageWidth", typeof(int),
+                typeof(OxyContextMenuBehavior),
+                new FrameworkPropertyMetadata(0,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    ImageWidthChangeFunc,
+                    ImageWidthCoerceFunc));
+
+        static void ImageWidthChangeFunc(DependencyObject target,
+            DependencyPropertyChangedEventArgs e)
+        {
+            var of = (int)e.OldValue;
+            var nf = (int)e.NewValue;
+            var obj = (OxyContextMenuBehavior)target;
+        }
+
+        static object ImageWidthCoerceFunc(DependencyObject target, object baseValue)
+        {
+            var obj = (OxyContextMenuBehavior)target;
+            var val = (int)baseValue;
+            if (val < 0) val = 0;
+            return val;
+        }
+        #endregion
+
+        #region ******************************* ImageHeight
         public int ImageHeight
         {
-            get { return (int)GetValue(MyImageHeight); }
-            set { SetValue(MyImageHeight, value); }
+            get { return (int)this.GetValue(ImageHeightProperty); }
+            set { this.SetValue(ImageHeightProperty, value); }
         }
-        public static readonly DependencyProperty MyImageHeight =
-            DependencyProperty.Register("ImageHeight", typeof(int), typeof(OxyContextMenuBehavior), new PropertyMetadata(0));
 
-        /// <summary>
-        /// 画像倍率
-        /// </summary>
+        public static readonly DependencyProperty ImageHeightProperty =
+            DependencyProperty.Register("ImageHeight", typeof(int),
+                typeof(OxyContextMenuBehavior),
+                new FrameworkPropertyMetadata(0,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    ImageHeightChangeFunc,
+                    ImageHeightCoerceFunc));
+
+        static void ImageHeightChangeFunc(DependencyObject target,
+            DependencyPropertyChangedEventArgs e)
+        {
+            var of = (int)e.OldValue;
+            var nf = (int)e.NewValue;
+            var obj = (OxyContextMenuBehavior)target;
+        }
+
+        static object ImageHeightCoerceFunc(DependencyObject target, object baseValue)
+        {
+            var obj = (OxyContextMenuBehavior)target;
+            var val = (int)baseValue;
+            if (val < 0) val = 0;
+            return val;
+        }
+        #endregion
+
+        #region ******************************* Scale
         public double Scale
         {
-            get { return (double)GetValue(MyScale); }
-            set { SetValue(MyScale, value); }
+            get { return (double)this.GetValue(ScaleProperty); }
+            set { this.SetValue(ScaleProperty, value); }
         }
-        public static readonly DependencyProperty MyScale =
-            DependencyProperty.Register("Scale", typeof(double), typeof(OxyContextMenuBehavior), new PropertyMetadata(1.0));
 
-        /// <summary>
-        /// 画像保存時のファイル名
-        /// </summary>
+        public static readonly DependencyProperty ScaleProperty =
+            DependencyProperty.Register("Scale", typeof(double),
+                typeof(OxyContextMenuBehavior),
+                new FrameworkPropertyMetadata(1.0,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    ScaleChangeFunc,
+                    ScaleCoerceFunc));
+
+        static void ScaleChangeFunc(DependencyObject target,
+            DependencyPropertyChangedEventArgs e)
+        {
+            var of = (double)e.OldValue;
+            var nf = (double)e.NewValue;
+            var obj = (OxyContextMenuBehavior)target;
+        }
+
+        static object ScaleCoerceFunc(DependencyObject target, object baseValue)
+        {
+            var obj = (OxyContextMenuBehavior)target;
+            var val = (double)baseValue;
+            if (val < 0.5) val = 0.5;
+            if (val > 5.0) val = 5.0;
+            return val;
+        }
+        #endregion
+
+        #region ******************************* FileName
         public string FileName
         {
-            get { return (string)GetValue(MyFileName); }
-            set { SetValue(MyFileName, value); }
+            get { return (string)this.GetValue(FileNameProperty); }
+            set { this.SetValue(FileNameProperty, value); }
         }
-        public static readonly DependencyProperty MyFileName =
-            DependencyProperty.Register("FileName", typeof(string), typeof(OxyContextMenuBehavior), new PropertyMetadata(""));
 
-        /// <summary>
-        /// ViewModelからのイベントを受けるためのEventAggregator
-        /// </summary>
-        public IEventAggregator EventA
+        public static readonly DependencyProperty FileNameProperty =
+            DependencyProperty.Register("FileName", typeof(string),
+                typeof(OxyContextMenuBehavior),
+                new FrameworkPropertyMetadata("",
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        #endregion
+
+
+        #region ******************************* SaveChart
+        public bool SaveChart
         {
-            get { return (IEventAggregator)GetValue(MyEA); }
-            set { SetValue(MyEA, value); }
+            get { return (bool)this.GetValue(SaveChartProperty); }
+            set { this.SetValue(SaveChartProperty, value); }
         }
-        public static readonly DependencyProperty MyEA =
-            DependencyProperty.Register("EventA", typeof(IEventAggregator), typeof(OxyContextMenuBehavior), new PropertyMetadata());
+
+        public static readonly DependencyProperty SaveChartProperty =
+            DependencyProperty.Register("SaveChart", typeof(bool),
+                typeof(OxyContextMenuBehavior),
+                new FrameworkPropertyMetadata(false,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    SaveChartChangeFunc,
+                    SaveChartCoerceFunc));
+
+        static void SaveChartChangeFunc(DependencyObject target,
+            DependencyPropertyChangedEventArgs e)
+        {
+            var of = (bool)e.OldValue;
+            var nf = (bool)e.NewValue;
+            var obj = (OxyContextMenuBehavior)target;
+
+            obj.SaveChart = false;
+        }
+
+        static object SaveChartCoerceFunc(DependencyObject target, object baseValue)
+        {
+            var obj = (OxyContextMenuBehavior)target;
+            var val = (bool)baseValue;
+
+            if (val == true)
+            {
+                obj.Save();
+            }
+
+            return val;
+        }
+        #endregion
+
 
         /// <summary>
-        /// 画像保存のイベントを受け取った時の処理
+        /// 画像保存
         /// </summary>
-        /// <param name="fn"></param>
-        private void ChartSave(string fn)
+        private void Save()
         {
             string filename = FileName;
-            if (FileName == "") filename = fn;
 
             if (filename == "")
             {
@@ -186,6 +276,7 @@ namespace ScatterPointApp.Behaviors
                 };
                 if (dlg.ShowDialog().Value) filename = dlg.FileName;
             }
+
             Plot plot = this.AssociatedObject as Plot;
 
             double width = plot.ActualWidth;

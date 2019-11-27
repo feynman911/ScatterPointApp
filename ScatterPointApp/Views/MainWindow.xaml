@@ -11,7 +11,7 @@
         </Grid.ColumnDefinitions>
         <oxy:Plot x:Name="Plot" PlotAreaBorderThickness="0" PlotType="Polar" Background="White" TextColor="#00000000" >
             <i:Interaction.Behaviors>
-                <Behaviors:OxyContextMenuBehavior EventA="{Binding EventA}"/>
+                <Behaviors:OxyContextMenuBehavior FileName="{Binding FileName}" SaveChart="{Binding ChartSave}" />
             </i:Interaction.Behaviors>
             <oxy:Plot.Axes>
                 <oxy:MagnitudeAxis Maximum="100" MinorGridlineStyle="Dash" MajorGridlineColor="#666464FF" MinorStep="5" MajorStep="25" Minimum="0" MinorGridlineColor="#336464FF" TextColor="Black"/>
@@ -37,7 +37,7 @@
             <oxy:ScatterSeries MarkerType="Circle" ItemsSource="{Binding ScatterPointsLive}" RenderInLegend="False" TrackerFormatString=""/>
         </oxy:Plot>
         <CheckBox Content="Active" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="32,23,0,0" IsChecked="{Binding StartFlag}" Height="15" Width="52" Grid.ColumnSpan="2"/>
-        <Button Content="ChartSaveEA" HorizontalAlignment="Left" Style="{DynamicResource SimpleButton}" VerticalAlignment="Top" Width="76" Margin="34,46,0,0" Command="{Binding SaveChartEA, Mode=OneWay}" Height="18">
+        <Button Content="ChartSave" HorizontalAlignment="Left" Style="{DynamicResource SimpleButton}" VerticalAlignment="Top" Width="76" Margin="34,46,0,0" Command="{Binding CommandSave, Mode=OneWay}" Height="18">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                     <GradientStop Color="#FFB4BDE4" Offset="0"/>
