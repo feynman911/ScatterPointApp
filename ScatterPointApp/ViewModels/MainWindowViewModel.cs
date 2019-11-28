@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 using OxyPlot.Series;
 using Prism.Commands;
@@ -152,24 +154,30 @@ namespace ScatterPointApp.ViewModels
             set { SetProperty(ref fileName, value); }
         }
 
-        private bool chartSave = false;
-        public bool ChartSave
+        private int chartSave = 0;
+        public int ChartSave
         {
             get { return chartSave; }
-            set
-            {
-                SetProperty(ref chartSave, true);
-                SetProperty(ref chartSave, false);
-            }
+            set { SetProperty(ref chartSave, value); }
         }
 
         private DelegateCommand commandSave;
         public DelegateCommand CommandSave =>
             commandSave ?? (commandSave = new DelegateCommand(ExecuteCommandSave));
 
-        void ExecuteCommandSave()
+        async void ExecuteCommandSave()
         {
-            ChartSave = true;
+            await Task.Run(() => Save());
+        }
+
+        void Save()
+        {
+            Application.Current.Dispatcher.Invoke(
+                new Action(() =>
+                {
+                    FileName = "Test_.png";
+                    ChartSave++;
+                }));
         }
 
         #endregion

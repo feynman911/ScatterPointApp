@@ -221,16 +221,16 @@ namespace ScatterPointApp.Behaviors
 
 
         #region ******************************* SaveChart
-        public bool SaveChart
+        public int SaveChart
         {
-            get { return (bool)this.GetValue(SaveChartProperty); }
+            get { return (int)this.GetValue(SaveChartProperty); }
             set { this.SetValue(SaveChartProperty, value); }
         }
 
         public static readonly DependencyProperty SaveChartProperty =
-            DependencyProperty.Register("SaveChart", typeof(bool),
+            DependencyProperty.Register("SaveChart", typeof(int),
                 typeof(OxyContextMenuBehavior),
-                new FrameworkPropertyMetadata(false,
+                new FrameworkPropertyMetadata(0,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     SaveChartChangeFunc,
                     SaveChartCoerceFunc));
@@ -238,23 +238,16 @@ namespace ScatterPointApp.Behaviors
         static void SaveChartChangeFunc(DependencyObject target,
             DependencyPropertyChangedEventArgs e)
         {
-            var of = (bool)e.OldValue;
-            var nf = (bool)e.NewValue;
+            var of = (int)e.OldValue;
+            var nf = (int)e.NewValue;
             var obj = (OxyContextMenuBehavior)target;
-
-            obj.SaveChart = false;
+            obj.Save();
         }
 
         static object SaveChartCoerceFunc(DependencyObject target, object baseValue)
         {
             var obj = (OxyContextMenuBehavior)target;
-            var val = (bool)baseValue;
-
-            if (val == true)
-            {
-                obj.Save();
-            }
-
+            var val = (int)baseValue;
             return val;
         }
         #endregion
